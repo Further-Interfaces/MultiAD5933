@@ -1,12 +1,13 @@
-#ifndef AD5933
-#define AD5933
+#ifndef AD5933_h
+#define AD5933_h
 
 #include<Wire.h> // I2C
 #include<Arduino.h> 
 
 #define LOG_ENABLED 1
 
-#define AD5933_ADR 0x0D;
+#define AD5933_ADDR 0x0D
+#define ADDR_POINTER 0xB0
 
 //register map (data sheet p23)
 #define REG_CTRL0 0x80
@@ -41,14 +42,17 @@ const int RANGE_1 = 0x00;
 const int RANGE_2 = 0x06;
 const int RANGE_3 = 0x04;
 const int RANGE_4 = 0x02;
+const int RESET = 0x01; //actual value should be 0x10 (already taken)
+const int EXT_SYS_CLK = 0x08;
 
 class AD5933{
     public:
+        AD5933();
     	//temperature
     	double readTemp();
 
     	//start frequency
-    	bool readStartFreq();
+    	/*bool readStartFreq();
     	bool writeStartFreq(long freq);
 
     	//frequency increment
@@ -57,11 +61,19 @@ class AD5933{
 
     	//number of frequency increments
     	bool readNumFreqInc();
-    	bool writeNumFreqInc(int num);
+    	bool writeNumFreqInc(int num);*/
 
     	//settling time cycles
-    	bool readSettlingTimeCycles();
-    	bool writeSettlingTimeCycles(int);
-}
+    	//bool readSettlingTimeCycles();
+    	//bool writeSettlingTimeCycles(int);
+
+    private:
+    	int getByteFromAddr(int addr);
+    	bool setByteToAddr(int addr, int val);
+
+        bool setAddressRegister(int addr);
+    	
+    	bool setCtrlRegister(int mode);
+};
 
 #endif
