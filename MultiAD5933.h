@@ -64,7 +64,7 @@ class AD5933{
 
     	//frequency increment
     	//bool readFreqInc();
-    	//bool writeFreqInc(long freq);
+    	bool writeFreqStepVal(long freq);
 
     	//number of frequency increments
     	//bool readNumFreqInc();
@@ -91,6 +91,8 @@ class AD5933{
     	bool setCtrlRegister(int mode);
 
         bool isMeasurementComplete(int mode);
+
+        int[] freqToHexParts(long freq);
 
 
 };
