@@ -76,6 +76,10 @@ class AD5933{
 
         bool setExtSysClock(bool usingExt);
         bool reset();
+        bool initStartFreq();
+        bool startFreqSweep();
+        bool repeatFreq();
+        long readMagnitude();
 
     private:
         long clockFreq;
@@ -93,7 +97,7 @@ class AD5933{
 
         bool isMeasurementComplete(int mode);
 
-        int[] freqToHexParts(long freq);
+        long freqToHex(long freq);
 
 
 };

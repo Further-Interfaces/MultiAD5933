@@ -64,21 +64,11 @@ writes the start frequency to the start frequency registers
 see page 24 of data sheet
 */    	
 bool AD5933::writeStartFreq(long freq){
-	//see datasheep page 24 for formula
-	/*long freqHEX = (freq / ((double)clockFreq / 4.0)) * pow(2,27);
-
-	#if LOG_ENABLED
-		Serial.print("Writing Freq: ");
-		Serial.print(freqHEX, HEX);
-	#endif
-
-	int low = freqHEX & 0xFF;
+	long freqHEX = freqToHex(freq);
+	
+	int high = (freqHEX & 0xFF0000) >> 16; 
 	int mid = (freqHEX & 0xFF00) >> 8;
-	int high = (freqHEX & 0xFF0000) >> 16;*/
-	int[] hexParts = freqToHexParts(freq);
-	int high = hexParts[0];
-	int mid = hexParts[1];
-	int low = hexParts[2]; 
+	int low = freqHEX & 0xFF;
 
 	bool reg0 = setByteToAddr(REG_START_FREQ0, high);
 	bool reg1 = setByteToAddr(REG_START_FREQ1, mid);
@@ -102,10 +92,11 @@ writes the frequency increment value
 see page 25 of data sheet
 */
 bool AD5933::writeFreqStepVal(long freq){
-	int[] hexParts = freqToHexParts(freq);
-	int high = hexParts[0];
-	int mid = hexParts[1];
-	int low = hexParts[2]; 
+	long freqHEX = freqToHex(freq);
+	
+	int high = (freqHEX & 0xFF0000) >> 16; 
+	int mid = (freqHEX & 0xFF00) >> 8;
+	int low = freqHEX & 0xFF;
 
 	bool reg0 = setByteToAddr(REG_FREQ_INC0, high);
 	bool reg1 = setByteToAddr(REG_FREQ_INC1, mid);
@@ -125,20 +116,11 @@ bool AD5933::writeFreqStepVal(long freq){
 
 /*
 Converts the given frequency into a hex representation defined by
-the formula given on page 24/25 of the data sheet. The hex value (3 bytes)
-is then split into individual bytes, which are then return in an array (in order).
-For example, if freq = 30000 (hex representation is 0x0F5C28) then the array
-{F, 5C, 28} is returned.
+the formula given on page 24/25 of the data sheet. 
 */
-int[] AD5933::freqToHexParts(long freq){
+long AD5933::freqToHex(long freq){
 	long freqHEX = (freq / ((double)clockFreq / 4.0)) * pow(2,27);
-
-	int parts[3];
-	parts[2] = freqHEX & 0xFF; //low
-	parts[1] = (freqHEX & 0xFF00) >> 8; //mid
-	parts[0] = (freqHEX & 0xFF0000) >> 16; //high
-
-	return parts;
+	return freqHEX;
 }
 
 /*
@@ -199,6 +181,58 @@ bool AD5933::setExtSysClock(bool usingExt){
 	}
 }
 
+bool AD5933::initStartFreq(){
+	if(setCtrlRegister(INIT_START_FREQ)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool AD5933::startFreqSweep(){
+	if(setCtrlRegister(START_FREQ_SWEEP)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool AD5933::repeatFreq(){
+	if(setCtrlRegister(REPEAT_FREQ)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+long AD5933::readMagnitude(){
+	if(isMeasurementComplete(VALID_DATA)){
+		//read values from real and imaginary registers
+		int realHigh = getByteFromAddr(REG_REAL0);
+		int realLow = getByteFromAddr(REG_REAL1);
+		int imgHigh = getByteFromAddr(REG_IMG0);
+		int imgLow = getByteFromAddr(REG_IMG1);
+
+		int real = realLow + (realHigh * 256);
+		if(real > 0x7FFF){
+			real &= 0x7FFF;
+			real -= 65536;
+		}
+
+		int img = imgLow + (imgHigh * 256);
+		if(img > 0x7FFF){
+			img &= 0x7FFF;
+			img -= 65536;
+		} 
+
+		//cacluclate magnitude
+		long magnitude = pow((pow(real,2) + pow(img,2)), 0.5);
+		return magnitude;
+	}else{
+		return 0;
+	}
+}
+
 
 /*
 Sets the AD5933 control modes such as starting a frequency sweep,
@@ -245,7 +279,7 @@ measurement (mode) is complete.
 bool AD5933::isMeasurementComplete(int mode){
 	//get byte from status register
 	int status = getByteFromAddr(REG_STATUS);
-
+	//Serial.println(status,HEX);
 	if(mode == VALID_TEMP_MEASURE || mode == VALID_DATA || mode == VALID_FREQ_SWEEP){
 		return status & mode == mode;
 	}else{
