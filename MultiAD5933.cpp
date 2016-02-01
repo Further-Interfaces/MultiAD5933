@@ -146,13 +146,32 @@ Writes the number of freqeuncy steps to the num frequency step registers.
 Technically, this number can be between 0 and 511 (inclusive) however, for this
 implementation i am only supporting 8 bits (0 - 255) because i am lazy.
 */
-bool AD5933::writeNumSteps(int num){
-	if(setByteToAddr(REG_NUM_INCS1,num)){
+bool AD5933::writeNumSteps(int steps){
+	if(setByteToAddr(REG_NUM_INCS1, steps)){
+		numSteps = steps;
 		return true;
 	}else{
 		#if LOG_ENABLED
 			Serial.print("ERROR Writting num steps: ");
-			Serial.println(num);
+			Serial.println(steps);
+		#endif
+		return false;
+	}
+}
+
+/*
+Writes the number of settling time cycles. A description of this can be seen on
+page 25 of the datasheet. While 2 bytes are available to set (for larger values), 
+my implementation will, again, only support 1 byte (sorry).
+*/
+bool AD5933::writeSettlingTimeCycles(int numCycles){
+	if(setByteToAddr(REG_SETTLE1, numCycles)){
+		numSettlingCycles = numCycles;
+		return true;
+	}else{
+		#if LOG_ENABLED
+			Serial.print("ERROR Writting num settling cycles: ");
+			Serial.println(numCycles);
 		#endif
 		return false;
 	}

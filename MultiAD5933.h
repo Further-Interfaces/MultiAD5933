@@ -68,11 +68,11 @@ class AD5933{
 
     	//number of frequency steps
     	//bool readNumFreqInc();
-    	bool writeNumSteps(int num);
+    	bool writeNumSteps(int steps);
 
     	//settling time cycles
     	//bool readSettlingTimeCycles();
-    	//bool writeSettlingTimeCycles(int);
+    	bool writeSettlingTimeCycles(int numCycles);
 
         bool setExtSysClock(bool usingExt);
         bool reset();
@@ -82,6 +82,7 @@ class AD5933{
         long startFreq;
         long freqStepVal;
         int numSteps;
+        int numSettlingCycles;
 
 
     	int getByteFromAddr(int addr);
