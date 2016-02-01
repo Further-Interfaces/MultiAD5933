@@ -2,7 +2,7 @@
 #include "MultiAD5933.h"
 
 AD5933::AD5933(){
-
+	clockFreq = 16000000;//16776000;
 }
 
 /*
@@ -39,6 +39,53 @@ double AD5933::readTemp(){
 			idx++;
 		}
 		return (double)total/32.0;
+	}
+}
+
+/*
+reads the start frequency stored in the start frequecy registers
+*/
+/*long AD5933::readStartFreq(){
+	long high = getByteFromAddr(REG_START_FREQ0) << 16;
+	int mid = getByteFromAddr(REG_START_FREQ1) << 8;
+	int low = getByteFromAddr(REG_START_FREQ2);
+	Serial.println(high ,HEX);
+
+	long freqHEX = high | mid | low;
+	Serial.print("read: ");
+	Serial.println(freqHEX,HEX);
+	long freqInt = ((double)freqHEX / pow(2,27)) * (clockFreq / 4.0);
+	return freqInt;
+}*/
+
+/*
+writes the start frequency to the start frequency registers
+*/    	
+bool AD5933::writeStartFreq(long freq){
+	//see datasheep page 24 for formula
+	long freqHEX = (freq / ((double)clockFreq / 4.0)) * pow(2,27);
+
+	#if LOG_ENABLED
+		Serial.print("Writing Freq: ");
+		Serial.print(freqHEX, HEX);
+	#endif
+
+	int low = freqHEX & 0xFF;
+	int mid = (freqHEX & 0xFF00) >> 8;
+	int high = (freqHEX & 0xFF0000) >> 16;
+
+	bool reg0 = setByteToAddr(REG_START_FREQ0, high);
+	bool reg1 = setByteToAddr(REG_START_FREQ1, mid);
+	bool reg2 = setByteToAddr(REG_START_FREQ2, low);
+
+	if(reg0 && reg1 && reg2){
+		return true;
+	}else{
+		#if LOG_ENABLED
+			Serial.print("ERROR Writing Freq: ");
+			Serial.print(freqHEX, HEX);
+		#endif
+		return false;
 	}
 }
 
@@ -108,14 +155,10 @@ Polls the status register to check if a certain
 measurement (mode) is complete. 
 */
 bool AD5933::isMeasurementComplete(int mode){
-	int ctrlByte = getByteFromAddr(REG_CTRL0);
-	Serial.println(ctrlByte,HEX);
 	//get byte from status register
 	int status = getByteFromAddr(REG_STATUS);
 
 	if(mode == VALID_TEMP_MEASURE || mode == VALID_DATA || mode == VALID_FREQ_SWEEP){
-		//Serial.print(status,HEX);
-		Serial.println();
 		return status & mode == mode;
 	}else{
 		#if LOG_ENABLED
@@ -153,7 +196,7 @@ bool AD5933::setByteToAddr(int addr, int val){
 	Wire.write(addr);
 	Wire.write(val);
 	int i2cReturn = Wire.endTransmission();
-	Serial.println("i2cReturn: " + i2cReturn);
+
 	if(i2cReturn == 0){
 		return true;
 	}else{

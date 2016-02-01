@@ -59,16 +59,16 @@ class AD5933{
     	double readTemp();
 
     	//start frequency
-    	/*bool readStartFreq();
+    	//long readStartFreq();
     	bool writeStartFreq(long freq);
 
     	//frequency increment
-    	bool readFreqInc();
-    	bool writeFreqInc(long freq);
+    	//bool readFreqInc();
+    	//bool writeFreqInc(long freq);
 
     	//number of frequency increments
-    	bool readNumFreqInc();
-    	bool writeNumFreqInc(int num);*/
+    	//bool readNumFreqInc();
+    	//bool writeNumFreqInc(int num);
 
     	//settling time cycles
     	//bool readSettlingTimeCycles();
@@ -78,6 +78,12 @@ class AD5933{
         bool reset();
 
     private:
+        long clockFreq;
+        long startFreq;
+        long freqStepValue;
+        int numSteps;
+
+
     	int getByteFromAddr(int addr);
     	bool setByteToAddr(int addr, int val);
 
