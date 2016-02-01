@@ -62,13 +62,13 @@ class AD5933{
     	//long readStartFreq();
     	bool writeStartFreq(long freq);
 
-    	//frequency increment
+    	//frequency step value
     	//bool readFreqInc();
     	bool writeFreqStepVal(long freq);
 
-    	//number of frequency increments
+    	//number of frequency steps
     	//bool readNumFreqInc();
-    	//bool writeNumFreqInc(int num);
+    	bool writeNumSteps(int num);
 
     	//settling time cycles
     	//bool readSettlingTimeCycles();
@@ -80,7 +80,7 @@ class AD5933{
     private:
         long clockFreq;
         long startFreq;
-        long freqStepValue;
+        long freqStepVal;
         int numSteps;
 
 

@@ -85,6 +85,7 @@ bool AD5933::writeStartFreq(long freq){
 	bool reg2 = setByteToAddr(REG_START_FREQ2, low);
 
 	if(reg0 && reg1 && reg2){
+		startFreq = freq;
 		return true;
 	}else{
 		#if LOG_ENABLED
@@ -111,6 +112,7 @@ bool AD5933::writeFreqStepVal(long freq){
 	bool reg2 = setByteToAddr(REG_FREQ_INC2, low);
 
 	if(reg0 && reg1 && reg2){
+		freqStepVal = freq;
 		return true;
 	}else{
 		#if LOG_ENABLED
@@ -137,6 +139,23 @@ int[] AD5933::freqToHexParts(long freq){
 	parts[0] = (freqHEX & 0xFF0000) >> 16; //high
 
 	return parts;
+}
+
+/*
+Writes the number of freqeuncy steps to the num frequency step registers. 
+Technically, this number can be between 0 and 511 (inclusive) however, for this
+implementation i am only supporting 8 bits (0 - 255) because i am lazy.
+*/
+bool AD5933::writeNumSteps(int num){
+	if(setByteToAddr(REG_NUM_INCS1,num)){
+		return true;
+	}else{
+		#if LOG_ENABLED
+			Serial.print("ERROR Writting num steps: ");
+			Serial.println(num);
+		#endif
+		return false;
+	}
 }
 
 /*
