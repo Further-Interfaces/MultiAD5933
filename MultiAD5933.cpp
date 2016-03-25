@@ -94,9 +94,9 @@ see page 25 of data sheet
 bool AD5933::writeFreqStepVal(long freq){
 	long freqHEX = freqToHex(freq);
 	
-	int high = (freqHEX & 0xFF0000) >> 16; 
-	int mid = (freqHEX & 0xFF00) >> 8;
-	int low = freqHEX & 0xFF;
+	int high = (freqHEX) >> 16; 
+	int mid = (freqHEX) >> 8;
+	int low = freqHEX;
 
 	bool reg0 = setByteToAddr(REG_FREQ_INC0, high);
 	bool reg1 = setByteToAddr(REG_FREQ_INC1, mid);
@@ -171,6 +171,17 @@ bool AD5933::reset(){
 }
 
 /*
+enter standby mode
+*/
+bool AD5933::standby(){
+	if(setCtrlRegister(STANDBY)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+/*
 Set if an external system clock is being used
 */
 bool AD5933::setExtSysClock(bool usingExt){
@@ -178,6 +189,54 @@ bool AD5933::setExtSysClock(bool usingExt){
 		return setByteToAddr(REG_CTRL1, EXT_SYS_CLK);
 	}else{
 		return setByteToAddr(REG_CTRL1, 0x00);
+	}
+}
+
+bool AD5933::setPGAx1(){
+	if(setCtrlRegister(PGA_1)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool AD5933::setPGAx5(){
+	if(setCtrlRegister(PGA_5)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool AD5933::setOutVoltageRange1(){
+	if(setCtrlRegister(RANGE_1)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool AD5933::setOutVoltageRange2(){
+	if(setCtrlRegister(RANGE_2)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool AD5933::setOutVoltageRange3(){
+	if(setCtrlRegister(RANGE_3)){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool AD5933::setOutVoltageRange4(){
+	if(setCtrlRegister(RANGE_4)){
+		return true;
+	}else{
+		return false;
 	}
 }
 

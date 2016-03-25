@@ -43,6 +43,8 @@ const int RANGE_1 = 0x00;
 const int RANGE_2 = 0x06;
 const int RANGE_3 = 0x04;
 const int RANGE_4 = 0x02;
+const int PGA_1 = 0x01;
+const int PGA_5 = 0;
 
 const int RESET = 0x10; 
 const int EXT_SYS_CLK = 0x08;
@@ -75,7 +77,14 @@ class AD5933{
     	bool writeSettlingTimeCycles(int numCycles);
 
         bool setExtSysClock(bool usingExt);
+        bool setPGAx1();
+        bool setPGAx5();
+        bool setOutVoltageRange1();
+        bool setOutVoltageRange2();
+        bool setOutVoltageRange3();
+        bool setOutVoltageRange4();
         bool reset();
+        bool standby();
         bool initStartFreq();
         bool startFreqSweep();
         bool repeatFreq();
