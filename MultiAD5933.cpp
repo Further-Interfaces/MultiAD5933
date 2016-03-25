@@ -338,9 +338,8 @@ measurement (mode) is complete.
 bool AD5933::isMeasurementComplete(int mode){
 	//get byte from status register
 	int status = getByteFromAddr(REG_STATUS);
-	//Serial.println(status,HEX);
 	if(mode == VALID_TEMP_MEASURE || mode == VALID_DATA || mode == VALID_FREQ_SWEEP){
-		return status & mode == mode;
+		return (status & mode) == mode;
 	}else{
 		#if LOG_ENABLED
 			Serial.println("ERROR invalid mode for polling status register");
