@@ -8,3 +8,5 @@ from a single I2C master. However, by using an analog multiplexer/demultiplexer 
 selected AD5933 (all AD5933s should be connected to a common SCL). 
 
 This library is set to use the CD74HCT4051 multiplexer/demultiplexer which can support up to eight AD5933s. 
+
+Check the wiki for updates!
