@@ -6,18 +6,23 @@
 FidgetBand::FidgetBand(){
 	numSensors = -1;
 	curSensor = -1;
+
+	getNumSensors();
 }
 
-double * FidgetBand::measure(freq){
+double * FidgetBand::measure(long freq){
 	int numMeasurements = (numSensors * (numSensors - 1)) / 2;
-	static double values[numMeasurements];
+	double values[numMeasurements];
 	int valueIdx = 0;
 
 	for(int i = 0; i < numSensors-1; i++){
-		setSensor(i);
+		transmit(i);
 
 		for(int j = i+1; j < numSensors; j++){
-
+			double val = receive(j);
+			values[valueIdx] = val;
+			valueIdx++;
+			Serial.println(val);
 		}
 	}
 
@@ -31,7 +36,7 @@ int FidgetBand::getNumSensors(){
 			count++;
 		}
 	}
-	numSensors = count
+	numSensors = count;
 	return count;
 }
 
@@ -54,3 +59,15 @@ bool FidgetBand::reset(){
 		ad5933.reset();
 	}
 }
+
+bool FidgetBand::transmit(int sensorIdx){
+	setSensor(sensorIdx);
+	ad5933.initStartFreq();
+    ad5933.startFreqSweep();
+}
+
+double FidgetBand::receive(int sensorIdx){
+	setSensor(sensorIdx);
+	return ad5933.readMagnitude();
+}
+

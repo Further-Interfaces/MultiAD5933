@@ -32,6 +32,7 @@ const int S0 = 15;
 class FidgetBand{
 	public:
 		FidgetBand();
+		FidgetBand(long startFreq, long freqStepVal, int numSteps);
 
 		double * measure(long freq);
 		int getNumSensors();
@@ -44,6 +45,8 @@ class FidgetBand{
 		bool setSensor(int sensorIdx);
 
 		bool reset();
+		bool transmit(int sensorIdx);
+		double receive(int sensorIdx);
 
 };
 
