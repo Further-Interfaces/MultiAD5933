@@ -34,17 +34,23 @@ class FidgetBand{
 		FidgetBand();
 		FidgetBand(long startFreq, long freqStepVal, int numSteps);
 
-		double * measure(long freq);
 		int getNumSensors();
+
+		double * measure(long freq);
+		bool reset();
+
+		bool setStartFreq(long startFreq);
+		bool setFreqStepVal(long freqStepVal);
+		bool setNumSteps(int numSteps);
 
 	private:
 		int numSensors;
 		int curSensor; //the index of the sensor that is currently being accessed
+		bool isSensing;
 		AD5933 ad5933;
 
 		bool setSensor(int sensorIdx);
 
-		bool reset();
 		bool transmit(int sensorIdx);
 		double receive(int sensorIdx);
 
