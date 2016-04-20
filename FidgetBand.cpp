@@ -203,12 +203,10 @@ bool FidgetBand::setPGA(int x){
 //======================
 //PRIVATE
 //======================
-bool FidgetBand::setSensor(int sensorIdx){
+void FidgetBand::setSensor(int sensorIdx){
 	digitalWrite(S0, (sensorIdx & 1) ? HIGH : LOW);
-  	sensorIdx >>= 1;
-  	digitalWrite(S1, (sensorIdx & 1) ? HIGH : LOW);
-  	sensorIdx >>= 1;
-  	digitalWrite(S2, (sensorIdx & 1) ? HIGH : LOW);
+  	digitalWrite(S1, (sensorIdx & 2) ? HIGH : LOW);
+  	digitalWrite(S2, (sensorIdx & 4) ? HIGH : LOW);
 
   	curSensor = sensorIdx;
 }
@@ -221,6 +219,8 @@ bool FidgetBand::transmit(int sensorIdx){
 
 double FidgetBand::receive(int sensorIdx){
 	setSensor(sensorIdx);
-	return ad5933.readMagnitude();
+	double val = ad5933.readMagnitude();
+	ad5933.repeatFreq();
+	return val;
 }
 

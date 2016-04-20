@@ -4,12 +4,13 @@
 #include <Arduino.h> 
 #include "MultiAD5933.h"
 
-#define MAX_NUM_SENSORS 8 //the maximum number of sensors supported by the fidget band
+#define MAX_NUM_SENSORS 4 //the maximum number of sensors supported by the fidget band
 
 //CD74HC4051 multiplexer address select pins
-const int S2 = 16; 
-const int S1 = 14;
 const int S0 = 15;
+const int S1 = 14;
+const int S2 = 16; 
+
 
 class FidgetBand{
 	public:
@@ -33,7 +34,7 @@ class FidgetBand{
 		int curSensor; //the index of the sensor that is currently being accessed
 		bool isSensing;
 
-		bool setSensor(int sensorIdx);
+		void setSensor(int sensorIdx);
 
 		bool transmit(int sensorIdx);
 		double receive(int sensorIdx);
