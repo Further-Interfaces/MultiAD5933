@@ -3,6 +3,7 @@
 
 AD5933::AD5933(){
 	clockFreq = 16000000;//16776000;
+	Wire.begin();
 }
 
 /*
@@ -266,6 +267,7 @@ bool AD5933::repeatFreq(){
 
 long AD5933::readMagnitude(){
 	if(isMeasurementComplete(VALID_DATA)){
+		
 		//read values from real and imaginary registers
 		int realHigh = getByteFromAddr(REG_REAL0);
 		int realLow = getByteFromAddr(REG_REAL1);

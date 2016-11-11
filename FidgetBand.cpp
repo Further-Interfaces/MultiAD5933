@@ -3,41 +3,20 @@
 //======================
 //PUBLIC
 //======================
-namespace{
-	AD5933 ad5933;
-}
+//namespace{
+//	AD5933 ad5933;
+//}
 
-FidgetBand::FidgetBand(){
-	numSensors = -1;
-	curSensor = -1;
+FidgetBand::FidgetBand() : ad5933(){ 
+	numSensors = 1;
+	curSensor = 0;
 	isSensing = false;
-
-	getNumSensors();
-
-	reset();
-	standby();
-	setOutVoltageRange(1);
-	setPGA(1);
-	setStartFreq(30000);
-	setFreqStepVal(5000);
-	setNumSteps(0);
 }
 
 FidgetBand::FidgetBand(long startFreq, long freqStepVal, int numSteps){
-	numSensors = -1;
-	curSensor = -1;
+	numSensors = 1;
+	curSensor = 0;
 	isSensing = false;
-
-	getNumSensors();
-
-	//setup each sensor
-	reset();
-	standby();
-	setOutVoltageRange(1);
-	setPGA(1);
-	setStartFreq(startFreq);
-	setFreqStepVal(freqStepVal);
-	setNumSteps(numSteps);
 }
 
 /*
@@ -137,6 +116,23 @@ bool FidgetBand::setNumSteps(int numSteps){
 		for(int i = 0; i < numSensors; i++){
 			setSensor(i);
 			bool success = ad5933.writeNumSteps(numSteps);
+			if(!success)
+				return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+/*
+Sets the number of settling cycles for each connected sensor to numSteps. Should
+only be called when the device is not sensing.
+*/
+bool FidgetBand::setNumSettlingTimeCycles(int numCycles){
+	if(!isSensing){
+		for(int i = 0; i < numSensors; i++){
+			setSensor(i);
+			bool success = ad5933.writeSettlingTimeCycles(numCycles);
 			if(!success)
 				return false;
 		}
