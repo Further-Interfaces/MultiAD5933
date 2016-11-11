@@ -8,15 +8,27 @@
 //}
 
 FidgetBand::FidgetBand() : ad5933(){ 
-	numSensors = 1;
+	numSensors = 2;
 	curSensor = 0;
 	isSensing = false;
 }
 
 FidgetBand::FidgetBand(long startFreq, long freqStepVal, int numSteps){
-	numSensors = 1;
+	numSensors = 2;
 	curSensor = 0;
 	isSensing = false;
+}
+
+bool FidgetBand::initBand(){
+	//setup each sensor
+	reset();
+	setOutVoltageRange(1);
+	setPGA(1);
+	setStartFreq(30000);
+	setFreqStepVal(0);
+	setNumSteps(0);
+	setNumSettlingTimeCycles(10);
+	standby();
 }
 
 /*
@@ -29,7 +41,7 @@ double * FidgetBand::measure(){
 	int numMeasurements = (numSensors * (numSensors - 1)) / 2;
 	double values[numMeasurements];
 	int valueIdx = 0;
-	Serial.println(numSensors);
+	//Serial.println(numSensors);
 
 	for(int i = 0; i < numSensors-1; i++){
 		transmit(i);
@@ -205,6 +217,8 @@ void FidgetBand::setSensor(int sensorIdx){
   	digitalWrite(S2, (sensorIdx & 4) ? HIGH : LOW);
 
   	curSensor = sensorIdx;
+  	Serial.print("Sensor: ");
+  	Serial.println(curSensor);
 }
 
 bool FidgetBand::transmit(int sensorIdx){
